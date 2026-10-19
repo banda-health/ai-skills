@@ -1,0 +1,29 @@
+{
+  "name": "banda-dev",
+  "displayName": "Banda Dev",
+  "version": "1.0.0",
+  "description": "AI skills for Banda Health developers: iDempiere design patterns, architecture decisions, multi-tenancy, API integration, and implementation planning.",
+  "author": {
+    "name": "Banda Health"
+  },
+  "homepage": "https://github.com/banda-health/ai-skills/tree/main/dev",
+  "repository": "https://github.com/banda-health/ai-skills",
+  "license": "MIT",
+  "keywords": [
+    "banda-health",
+    "idempiere",
+    "erp",
+    "development",
+    "architecture",
+    "fhir",
+    "integration"
+  ],
+  "category": "developer-tools",
+  "tags": [
+    "idempiere",
+    "architecture",
+    "design",
+    "integration"
+  ],
+  "skills": "./skills/"
+}

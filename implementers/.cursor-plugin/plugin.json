@@ -1,0 +1,29 @@
+{
+  "name": "banda-implementers",
+  "displayName": "Banda Implementers",
+  "version": "1.0.0",
+  "description": "AI skills for Banda Health clinic implementers: workflow mapping, requirements gathering, specification writing, and issue creation.",
+  "author": {
+    "name": "Banda Health"
+  },
+  "homepage": "https://github.com/banda-health/ai-skills/tree/main/implementers",
+  "repository": "https://github.com/banda-health/ai-skills",
+  "license": "MIT",
+  "keywords": [
+    "banda-health",
+    "clinic",
+    "implementation",
+    "workflow",
+    "requirements",
+    "design",
+    "idempiere"
+  ],
+  "category": "healthcare",
+  "tags": [
+    "workflow",
+    "requirements",
+    "design",
+    "implementation"
+  ],
+  "skills": "./skills/"
+}

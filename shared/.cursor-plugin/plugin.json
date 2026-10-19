@@ -1,0 +1,27 @@
+{
+  "name": "banda-shared",
+  "displayName": "Banda Shared",
+  "version": "1.0.0",
+  "description": "Shared AI skills for both Banda Health implementers and developers: terminology, glossary, design templates, and common conventions.",
+  "author": {
+    "name": "Banda Health"
+  },
+  "homepage": "https://github.com/banda-health/ai-skills/tree/main/shared",
+  "repository": "https://github.com/banda-health/ai-skills",
+  "license": "MIT",
+  "keywords": [
+    "banda-health",
+    "terminology",
+    "glossary",
+    "templates",
+    "reference"
+  ],
+  "category": "reference",
+  "tags": [
+    "glossary",
+    "terminology",
+    "templates",
+    "reference"
+  ],
+  "skills": "./skills/"
+}
