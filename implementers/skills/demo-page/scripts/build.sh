@@ -25,10 +25,19 @@ SKILL_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 TEMPLATE="$SKILL_DIR/assets/template.html"
 TOKENS="$SKILL_DIR/assets/tokens.css"
 BASE="$SKILL_DIR/assets/base.css"
+FONTS="$SKILL_DIR/assets/fonts.css"
 
 for f in "$FRAGMENT" "$TEMPLATE" "$TOKENS" "$BASE"; do
   [ -f "$f" ] || { echo "error: missing file: $f" >&2; exit 1; }
 done
+
+# The product's embedded type. Optional: without it a page still builds, but it
+# renders in a system font, which is visibly not the product.
+if [ ! -f "$FONTS" ]; then
+  echo "warning: no assets/fonts.css — this page gets fallback type." >&2
+  echo "         Run scripts/extract-fonts.sh to embed the product's font." >&2
+  FONTS=""
+fi
 if [ -n "$DEMOCSS" ] && [ ! -f "$DEMOCSS" ]; then
   echo "error: missing file: $DEMOCSS" >&2
   exit 1
@@ -71,7 +80,7 @@ OUT_DIR="$(dirname "$OUTPUT")"
 [ "$OUT_DIR" = "" ] || mkdir -p "$OUT_DIR"
 
 awk -v tokens="$TOKENS" -v base="$BASE" -v fragment="$FRAGMENT" -v democss="$DEMOCSS" \
-    -v title="$TITLE" -v banner="$BANNER" -v meta="$META" '
+    -v fonts="$FONTS" -v title="$TITLE" -v banner="$BANNER" -v meta="$META" '
 function emit(file,   line) {
   while ((getline line < file) > 0) print line
   close(file)
@@ -81,6 +90,7 @@ function subst(marker, value,   i) {
   while (i = index($0, marker))
     $0 = substr($0, 1, i - 1) value substr($0, i + length(marker))
 }
+/@@FONTS@@/   { if (fonts != "") emit(fonts); next }
 /@@TOKENS@@/  { emit(tokens);   next }
 /@@BASE@@/    { emit(base);     next }
 /@@DEMOCSS@@/ { if (democss != "") emit(democss); next }

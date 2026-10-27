@@ -62,6 +62,7 @@ The script splices the fragment plus the verbatim CSS into `assets/template.html
 
 Read `assets/template.html`, `assets/tokens.css`, and `assets/base.css`, and substitute the markers verbatim — character-for-character, resist reformatting:
 
+- `/* @@FONTS@@ */` → **delete the marker line.** `fonts.css` is ~53K of base64 font data and must not pass through the model. The page then renders in a system font instead of the product's — say so in your summary.
 - `/* @@TOKENS@@ */` → full contents of `tokens.css`
 - `/* @@BASE@@ */` → full contents of `base.css`
 - `/* @@DEMOCSS@@ */` → demo-specific CSS, or delete the marker line
@@ -89,5 +90,7 @@ Copy inside the demo follows product-writing rules: buttons say exactly what the
 The extraction guide lives at `references/EXTRACTION.md` — it covers locating the source of truth in the Banda frontend, which values to pull, and how to verify against a golden screen. Open `assets/components.html` in a browser to preview the whole library at once; its coverage map records what is extracted and what is known to be missing. **Update that map whenever you add a component or discover a gap** — it is what stops the next demo from inventing a substitute.
 
 When the product gains a component demos keep needing, lift its **real** markup into `assets/components.html` and any new values into `tokens.css`/`base.css`. The library should always be a distillation of the product, never a parallel design effort.
+
+`assets/fonts.css` holds the product's own type, subset and embedded as base64. `scripts/extract-fonts.sh` regenerates it from the frontend repo's font files. Treat it as generated output: never hand-edit it, and re-run the script when the product changes the fonts it declares.
 
 `build.sh` warns when the commit recorded in `tokens.css` no longer matches the frontend repo's HEAD. Treat that warning as a prompt to re-run extraction for the components the demo touches.

@@ -346,9 +346,11 @@ body { padding: var(--space-6); }
     <button class="pill" type="button" role="tab" aria-selected="false" aria-controls="pane-imm">Immunization</button>
   </div>
   <div class="pane" id="pane-anc" role="tabpanel">
-    <div class="card" style="margin-top: 0;">
+    <div class="card">
       <div class="card-header"><h2 class="card-title">Antenatal</h2></div>
-      <div class="card-body">The active section's form sits below the pill row.</div>
+      <div class="card-body">The active section's form sits below the pill row. The
+      card keeps its own 1rem top margin, as .bh-card does in the product — do not
+      zero it to tighten the gap.</div>
     </div>
   </div>
   <!-- /component: mch-section-pills -->

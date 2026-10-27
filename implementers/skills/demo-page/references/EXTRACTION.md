@@ -29,10 +29,14 @@ values onto them; preserve the product's units (rem vs px). Pull:
   (primary, muted, faint, inverse); primary action (base, hover, soft,
   text-on-primary); success/warning/danger/info each with a soft variant;
   focus ring.
-- Typography: family stacks, size scale, weights, base line-height. Demos
-  make zero network requests, so if the product uses a webfont, keep the
-  family name first in the stack and accept the system fallback (note it
-  in the header).
+- Typography: family stacks, size scale, weights, base line-height. Keep
+  the product's family name first in the stack. When the product self-hosts
+  its font, run `scripts/extract-fonts.sh` to subset those same files and
+  embed them in `assets/fonts.css` as base64. A data URI makes no network
+  request, so demos stay self-contained and still show the real type. Embed
+  the faces the product declares and no others: a face the product lacks
+  renders differently there than in your demo. If you cannot get the font
+  files, accept the system fallback and say so in the tokens header.
 - Spacing scale, radii, shadows, border width, sidebar width, topbar height.
 
 If the product has roles these tokens don't cover, **add** tokens plus

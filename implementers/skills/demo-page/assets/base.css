@@ -485,8 +485,14 @@ textarea.input { resize: vertical; min-height: 72px; }
 
 /* ---- Mode toggle (.visit-mode-toggle.btn-group) ----
    Two separate rounded buttons with a gap, not a joined button group. Built on
-   Bootstrap's .btn-check: a visually hidden radio driving an outline button. */
-.mode-toggle { display: inline-flex; gap: var(--space-2); }
+   Bootstrap's .btn-check: a visually hidden radio driving an outline button.
+   VisitModeToggle.tsx carries `mb-3` in its own JSX, the same 1rem MchSectionNav
+   carries, so the margin belongs to the component and not to the caller. */
+.mode-toggle {
+  display: inline-flex;
+  gap: var(--space-2);
+  margin-bottom: var(--space-4);
+}
 .mode-toggle input[type="radio"] {
   position: absolute;
   clip: rect(0, 0, 0, 0);

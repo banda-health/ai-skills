@@ -6,17 +6,19 @@
    src/scss/base/_variables.scss (Bootstrap 5.3 theme) compiled with the
    repo's own sass; component values read from the compiled CSS output.
 
-   Assets version: v3
+   Assets version: v4
    Extracted from: greenlight-client@7c3b7812
    Extraction date: 2026-10-23
 
    The version + date are what implementers without the repo judge staleness
    by; they appear in every generated page's footer. Bump the version on any
-   change to tokens.css, base.css or components.html.
+   change to tokens.css, base.css, fonts.css or components.html.
 
-   Font note: the product self-hosts "Source Sans Pro" (400/700/300).
-   Demos make zero network requests, so the family name is kept first in
-   the stack and the system fallback applies where it isn't installed.
+   Font note: the product self-hosts "Source Sans Pro" (300/400/bold).
+   assets/fonts.css embeds those same three faces as base64 data URIs, so a
+   demo shows the product's type and still makes zero network requests.
+   Regenerate it with scripts/extract-fonts.sh. The product declares no 600
+   face, so weight 600 falls to bold in a demo exactly as it does there.
 ===================================================================== */
 
 :root {
