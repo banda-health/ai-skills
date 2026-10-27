@@ -131,6 +131,7 @@ a:hover { color: var(--color-link-hover); }
 /* ---- Info ribbon (entity context strip under the page header) ---- */
 .info-ribbon {
   background: var(--color-ribbon);
+  /* TOKEN-GAP: product uses a literal margin-top: 5px; nearest step is 4px. */
   margin-top: var(--space-1);
   padding: 0 var(--space-4);
 }
@@ -261,7 +262,8 @@ textarea.input { resize: vertical; min-height: 72px; }
   background: var(--color-card-cap);
   border-bottom: var(--border-w) solid var(--color-border-translucent);
 }
-.card-title { font-size: var(--text-lg); font-weight: var(--weight-medium); }
+/* Card.Header carries `fw-bold h5` in the product — bold, not medium. */
+.card-title { font-size: var(--text-lg); font-weight: var(--weight-bold); }
 .card-body { padding: var(--space-4); }
 .card-footer {
   padding: var(--space-2) var(--space-4);
@@ -271,7 +273,40 @@ textarea.input { resize: vertical; min-height: 72px; }
   justify-content: flex-end;
   gap: var(--space-2);
 }
-.card + .card, .card + .kpi-grid, .kpi-grid + .card { margin-top: var(--space-4); }
+/* .bh-card carries its own margin: 1rem on top, right and bottom, 0 left.
+   Demos should not add margin-top by hand — the card already has it. */
+.card { margin: var(--space-4) var(--space-4) var(--space-4) 0; }
+
+/* ---- Form group card (`card border h-100 shadow-none` nested inside a
+   .bh-card body) ----
+   How an MCH form groups its questions: FamilyPlanningDetails.tsx wraps each
+   labelled topic in one of these. Use it for the sections of a single clinical
+   form. Do NOT use .pills for that — those navigate BETWEEN MCH sections.
+   This is not a .bh-card: no offset shadow, no margin, a plain --color-border
+   edge from the `.border` utility, and it stretches to the row's height.
+   The grid is `Row.gy-3.align-items-start` + `Col xs=12 md=6`: 1.5rem column
+   gutter, 1rem row gutter, stacking below Bootstrap's md. `.span-full` is
+   `Col xs={12}`. */
+.group-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  column-gap: var(--space-6);
+  row-gap: var(--space-4);
+  align-items: start;
+}
+.group-grid > .span-full { grid-column: 1 / -1; }
+@media (max-width: 767.98px) { .group-grid { grid-template-columns: 1fr; } }
+.group-card {
+  height: 100%;
+  background: var(--color-surface);
+  border: var(--border-w) solid var(--color-border);
+  border-radius: var(--radius-md);
+  color: var(--color-text);
+}
+.group-card-body { padding: var(--space-4); }
+/* `Form.Label fw-semibold d-block mb-2` — the group's question text. Semibold,
+   not the bold of .label, and it labels a group rather than one input. */
+.group-label { display: block; font-weight: var(--weight-semibold); margin-bottom: var(--space-2); }
 
 /* ---- KPI tiles (dashboard stat cards) ---- */
 .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: var(--space-4); margin-bottom: var(--space-4); }
@@ -304,6 +339,62 @@ textarea.input { resize: vertical; min-height: 72px; }
 .table tbody tr:hover { background: var(--color-row-hover); }
 .table .num { text-align: right; font-variant-numeric: tabular-nums; }
 
+/* ---- Form tables (.bh-table--form) ----
+   The product's data-entry grid, and nothing like .table above: cells have
+   NO padding, controls fill them edge to edge and drop their own border and
+   radius, headers are centered on a full 1px box, and column widths come
+   from the data type rather than the content. Used by the visit page for
+   Diagnosis, Products/services and Payments. */
+.table-form {
+  width: 100%;
+  margin: 0;
+  border: var(--border-w) solid var(--color-border-strong);
+  border-collapse: collapse;
+  font-size: var(--text-md);
+  color: var(--color-text);
+  cursor: initial;
+}
+.table-form th {
+  padding: 0 var(--space-2);
+  border: var(--border-w) solid var(--color-border-strong);
+  font-weight: var(--weight-bold);
+  text-align: center;
+  vertical-align: bottom;
+}
+.table-form td {
+  padding: 0;
+  border-bottom: var(--border-w) solid var(--color-border-strong);
+  vertical-align: middle;
+}
+.table-form tbody tr { cursor: initial; }
+.table-form tbody tr:hover { background: transparent; }
+/* Controls fill the cell and shed their own chrome (.keep-border opts out). */
+.table-form .input:not(.keep-border) { border: 0; border-radius: 0; }
+/* FormatNumberInput defaults to .text-end, so numeric entry is right-aligned. */
+.table-form .num { text-align: right; font-variant-numeric: tabular-nums; }
+/* Footer label cells: right-aligned bold text against the value column. */
+.table-form .cell-label { padding-right: var(--space-2); text-align: right; }
+.table-form .cell-action { text-align: center; }
+/* Column widths keyed to the data type, straight from the product. */
+.table-form .data-type-autocomplete { width: 600px; }
+.table-form .data-type-text { width: 300px; }
+.table-form .data-type-selection { width: 120px; }
+.table-form .data-type-fulfillment { width: 180px; }
+.table-form .data-type-numeric { width: 130px; }
+.table-form .data-type-action { width: 25px; }
+
+/* Icon-only action button inside a form-table cell (product: .btn.p-0.w-100) */
+.btn-icon {
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--color-text);
+  font: inherit;
+  cursor: pointer;
+}
+.btn-icon:hover { color: var(--color-link-hover); }
+
 /* ---- Badges (Bootstrap: solid fill, white text, radius 6px) ---- */
 .badge {
   display: inline-block;
@@ -322,27 +413,132 @@ textarea.input { resize: vertical; min-height: 72px; }
 .badge-info    { background: var(--color-info); color: var(--color-on-neutral); }
 .badge-neutral { background: var(--color-secondary-action); }
 
-/* ---- Tabs (gray-blue strip; cyan inactive tabs, white active) ---- */
+/* ---- Tabs (.nav-tabs) ----
+   Redesigned in the product since the v1 extraction. It is no longer a strip
+   of cyan tabs with inset edges: it is a gray-blue tray holding transparent
+   tabs, and the active one is a white rounded card with a soft drop shadow.
+   The tray has no bottom margin — the card below carries its own top margin. */
 .tabs {
   display: flex;
-  background: var(--color-ribbon);
-  border-bottom: var(--border-w) solid var(--color-border);
-  margin-bottom: var(--space-4);
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--tab-gap);
+  padding: var(--tab-tray-pad-y) var(--tab-tray-pad-x);
+  background: var(--tab-tray-bg);
+  border: none;
+  border-radius: 0;
+  margin-bottom: 0;
 }
 .tab {
-  padding: var(--space-2) var(--space-4);
-  margin-left: var(--space-4);
-  margin-bottom: calc(-1 * var(--border-w));
+  display: flex;
+  align-items: center;
+  margin: 0;
+  padding: var(--tab-pad-y) var(--tab-pad-x);
   border: none;
-  border-top-left-radius: var(--radius-md);
-  border-top-right-radius: var(--radius-md);
-  background: var(--color-info);
-  color: var(--color-on-neutral);
+  border-radius: var(--radius-md);
+  background: transparent;
+  box-shadow: none;
+  color: var(--tab-color);
   font: inherit;
+  line-height: 1.25;
   cursor: pointer;
-  box-shadow: var(--tab-inset);
 }
-.tab.active { background: var(--color-surface); color: var(--color-text); box-shadow: var(--tab-inset-active); }
+.tab.active {
+  background: var(--color-surface);
+  color: var(--color-text);
+  font-weight: var(--weight-semibold);
+  box-shadow: var(--tab-active-shadow);
+}
+.tab:disabled, .tab.disabled { background: transparent; color: var(--color-menu-hover); }
+
+/* ---- MCH section pills (.visit-mch-nav.nav-pills) ----
+   How the product navigates the sections of an MCH form. Outlined in $primary
+   when inactive, filled slate-blue when active. Prefer this over an accordion
+   for any multi-section clinical form. One pane shows at a time. */
+.pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-bottom: var(--space-4);
+  padding-left: 0;
+  list-style: none;
+}
+.pill {
+  padding: 0.375rem var(--space-4);
+  border: var(--border-w) solid var(--color-primary);
+  border-radius: var(--radius-pill);
+  background: none;
+  color: var(--color-primary);
+  font: inherit;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.pill:hover:not(.active) { color: var(--color-link-hover); }
+.pill.active {
+  background: var(--color-active-fill);
+  border-color: transparent;
+  color: var(--color-text-inverse);
+}
+.pill:disabled { color: var(--color-placeholder); border-color: var(--color-border); cursor: not-allowed; }
+/* In the product inactive panes unmount; a static demo hides them instead. */
+.pane[hidden] { display: none; }
+
+/* ---- Mode toggle (.visit-mode-toggle.btn-group) ----
+   Two separate rounded buttons with a gap, not a joined button group. Built on
+   Bootstrap's .btn-check: a visually hidden radio driving an outline button. */
+.mode-toggle { display: inline-flex; gap: var(--space-2); }
+.mode-toggle input[type="radio"] {
+  position: absolute;
+  clip: rect(0, 0, 0, 0);
+  pointer-events: none;
+}
+.mode-toggle .btn-outline-primary {
+  background: transparent;
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+.mode-toggle input[type="radio"]:checked + .btn-outline-primary {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: var(--color-on-primary);
+}
+
+/* ---- Badge choice (BadgeChoice.tsx) ----
+   `btn btn-sm rounded-pill bh-badge-choice`, .btn-primary when selected and
+   .btn-outline-secondary when not, inside `d-flex flex-wrap gap-2` with
+   role="radiogroup". This is the product's answer control inside a form group
+   card: Yes/No questions and short reference lists. Clicking the selected
+   badge clears it, so "unanswered" stays reachable. .bh-badge-choice raises
+   the btn-sm inline padding to 0.9rem and the weight to 600. */
+.badge-choice-set { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+.badge-choice {
+  padding: 0.25rem 0.9rem;
+  border: var(--border-w) solid var(--color-secondary-action);
+  border-radius: var(--radius-pill);
+  background: transparent;
+  color: var(--color-secondary-action);
+  font: inherit;
+  font-size: var(--text-sm);
+  font-weight: var(--weight-semibold);
+  line-height: var(--leading);
+  cursor: pointer;
+  transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out;
+}
+.badge-choice:hover:not(:disabled):not(.selected) {
+  background: var(--color-menu-border);
+  border-color: var(--color-choice-hover-border);
+  color: var(--color-text);
+}
+.badge-choice.selected {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: var(--color-on-primary);
+}
+.badge-choice.selected:hover:not(:disabled) {
+  background: var(--color-primary-light);
+  border-color: var(--color-primary-light);
+}
+.badge-choice:disabled { opacity: 0.65; cursor: not-allowed; }
 
 /* ---- Alerts (Bootstrap 5.3: subtle bg, emphasis text, soft border) ---- */
 .alert {

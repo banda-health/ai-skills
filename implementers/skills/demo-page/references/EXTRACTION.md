@@ -67,8 +67,12 @@ previews the whole library at once.
 ## 5. Finish
 
 1. In `assets/tokens.css`: delete the marker word from the STATUS line
-   (this is what silences the placeholder banner) and fill in
-   `Extracted from:` (repo@commit) and `Extraction date:`.
+   (this is what silences the placeholder banner), bump `Assets version:`
+   to the next number, and fill in `Extracted from:` (repo@commit) and
+   `Extraction date:`. `build.sh` stamps the version and date into every
+   page's footer. An implementer without the frontend repo has no other
+   way to tell how old a demo's styling is, so a version left unbumped
+   makes every new page claim the old extraction.
 2. Open a pull request against this repo to publish the new values.
    This folder is the shared copy that implementers install, so a
    re-extraction only reaches them once it is merged here.

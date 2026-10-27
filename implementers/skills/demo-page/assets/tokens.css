@@ -6,8 +6,13 @@
    src/scss/base/_variables.scss (Bootstrap 5.3 theme) compiled with the
    repo's own sass; component values read from the compiled CSS output.
 
-   Extracted from: greenlight-client@36600f07
-   Extraction date: 2026-07-18
+   Assets version: v3
+   Extracted from: greenlight-client@7c3b7812
+   Extraction date: 2026-10-23
+
+   The version + date are what implementers without the repo judge staleness
+   by; they appear in every generated page's footer. Bump the version on any
+   change to tokens.css, base.css or components.html.
 
    Font note: the product self-hosts "Source Sans Pro" (400/700/300).
    Demos make zero network requests, so the family name is kept first in
@@ -44,6 +49,7 @@
   --radius-sm: 0.25rem;
   --radius-md: 0.375rem;   /* buttons, inputs, cards, badges, tabs */
   --radius-lg: 0.5rem;     /* modals */
+  --radius-pill: 2rem;     /* MCH section pills (.visit-mch-nav .nav-link) */
   --border-w: 1px;
 
   /* Shell dimensions */
@@ -67,6 +73,7 @@
      CTA (New / Save) is GREEN — use .btn-success for main actions. */
   --color-primary: #5f92c8;
   --color-primary-hover: #517caa;
+  --color-primary-light: #7ca6d2;   /* mix(white, $primary, 18%) — selected badge-choice hover */
   --color-primary-soft: #dfe9f4;    /* --bs-primary-bg-subtle */
   --color-on-primary: #ffffff;
   --color-link-hover: #4c75a0;
@@ -86,10 +93,12 @@
   --color-danger-soft: #f6e3e4;
   --color-danger-emphasis: #532d30;
   --color-danger-border-soft: #ecc6c9;
-  --color-info: #0dcaf0;
-  --color-info-soft: #cff4fc;
-  --color-info-emphasis: #055160;
-  --color-info-border-soft: #9eeaf9;
+  /* $info is overridden to a blue in the product, NOT Bootstrap's cyan:
+     "Info buttons/pills (allergies, lab return) — UAT-selected blue." */
+  --color-info: #5481b9;
+  --color-info-soft: #dde6f1;
+  --color-info-emphasis: #22344a;
+  --color-info-border-soft: #bbcde3;
 
   /* Banda-specific roles */
   --color-brand: #475f7b;            /* sidebar logo block */
@@ -97,14 +106,29 @@
   --color-menu-hover: #b8bec6;       /* $secondary-light — menu hover/active */
   --color-menu-border: #f0f0f0;      /* $secondary-most-lightest — menu separators */
   --color-neutral-btn: #e9ecef;      /* btn-light / btn-bh-light (Cancel, Back) */
-  --color-neutral-btn-hover: #ced4da;
+  --color-neutral-btn-hover: #c6c9cb;
   --color-on-neutral: #000000;
   --color-secondary-action: #607689; /* $secondary — solid secondary buttons/badges */
   --color-input-focus-border: #a3afbd;
+  --color-choice-hover-border: #c6cbd2;  /* $secondary-lighter — badge-choice hover border */
+  /* $component-active-bg is overridden to $primary-font-color, so the active
+     pill fills slate-blue, NOT $primary. Same hex as body text, different role. */
+  --color-active-fill: #475f7b;
   --color-row-hover: rgba(0, 0, 0, 0.075);   /* --bs-table-hover */
   --color-page-active: #aab1bb;      /* bh-btn-page--active */
   --color-backdrop: rgba(0, 0, 0, 0.5);
   --color-card-cap: rgba(33, 37, 41, 0.03);  /* card header/footer tint */
+
+  /* Tab strip (.nav-tabs — redesigned since v1: a gray-blue tray holding
+     transparent tabs, with the active one a white rounded card) */
+  --tab-tray-bg: #d5d9dd;          /* $secondary-lightest */
+  --tab-tray-pad-y: 0.375rem;
+  --tab-tray-pad-x: 0.5rem;
+  --tab-gap: 0.25rem;
+  --tab-pad-y: 0.625rem;
+  --tab-pad-x: 1rem;
+  --tab-color: #607689;            /* $secondary */
+  --tab-active-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
 
   /* Layering ($zindex-modal — backdrop shares it in the product) */
   --z-modal: 1055;
@@ -113,11 +137,11 @@
      $input-focus-box-shadow: none). Inputs signal focus by border color. */
   --focus-ring: none;
 
+  /* v1 carried --tab-inset / --tab-inset-active for the old cyan tab strip.
+     That design is gone; the tokens were removed rather than left to rot. */
+
   /* Shadows */
   --shadow-sm: 5px 3px 5px #c6cbd2;  /* .bh-card ($secondary-lighter) */
   --shadow-md: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075); /* modal (--bs-box-shadow-sm) */
 
-  /* Tab inset edges (.nav-tabs .nav-link box-shadow) */
-  --tab-inset: inset -1px 0 0 0 rgba(0, 0, 0, 0.13), inset 1px 0 0 0 rgba(0, 0, 0, 0.13), inset 0 1px 0 0 rgba(0, 0, 0, 0.13);
-  --tab-inset-active: inset -1px 0 0 0 rgba(0, 0, 0, 0.25), inset 1px 0 0 0 rgba(0, 0, 0, 0.25), inset 0 1px 0 0 rgba(0, 0, 0, 0.25);
 }
