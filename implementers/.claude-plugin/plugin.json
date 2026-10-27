@@ -1,0 +1,16 @@
+{
+  "name": "banda-implementers",
+  "displayName": "Banda skills for implementers",
+  "description": "Skills for clinic implementers: Banda-accurate demo pages and YouTrack issue creation.",
+  "author": {
+    "name": "Banda Health"
+  },
+  "repository": "https://github.com/banda-health/ai-skills",
+  "keywords": [
+    "banda",
+    "demo",
+    "mockup",
+    "design-system",
+    "youtrack"
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "name": "banda-health",
+  "description": "AI agent skills for Banda Health workflows",
+  "owner": {
+    "name": "Banda Health",
+    "url": "https://github.com/banda-health"
+  },
+  "plugins": [
+    {
+      "name": "banda-implementers",
+      "source": "./implementers",
+      "description": "Skills for clinic implementers: Banda-accurate demo pages and YouTrack issue creation."
+    }
+  ]
+}

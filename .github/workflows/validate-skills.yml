@@ -3,13 +3,19 @@ name: Validate Skills
 on:
   pull_request:
     paths:
-      - '*/skills/**/*.md'
+      - '*/skills/**'
+      - '.claude-plugin/**'
+      - '*/.claude-plugin/**'
+      - 'scripts/**'
       - '.github/workflows/validate-skills.yml'
   push:
     branches:
       - main
     paths:
-      - '*/skills/**/*.md'
+      - '*/skills/**'
+      - '.claude-plugin/**'
+      - '*/.claude-plugin/**'
+      - 'scripts/**'
       - '.github/workflows/validate-skills.yml'
 
 jobs:
@@ -23,73 +29,172 @@ jobs:
         run: |
           #!/bin/bash
           set -e
-          
+
           echo "Validating SKILL.md files..."
-          
+
           failed=0
-          
+
           # Find all SKILL.md files
           while IFS= read -r -d '' skill_file; do
             echo "Checking $skill_file"
-            
+
             # Extract folder name
             folder_name=$(basename "$(dirname "$skill_file")")
-            
+
             # Check if file has YAML frontmatter
             if ! head -1 "$skill_file" | grep -q '^---$'; then
               echo "❌ ERROR: $skill_file is missing YAML frontmatter opening (---)"
               failed=1
               continue
             fi
-            
+
             # Extract frontmatter (between first and second ---)
             frontmatter=$(sed -n '/^---$/,/^---$/p' "$skill_file" | sed '1d;$d')
-            
+
             # Check for 'name' field
             if ! echo "$frontmatter" | grep -q '^name:'; then
               echo "❌ ERROR: $skill_file is missing 'name' field in frontmatter"
               failed=1
               continue
             fi
-            
+
             # Check for 'description' field
             if ! echo "$frontmatter" | grep -q '^description:'; then
               echo "❌ ERROR: $skill_file is missing 'description' field in frontmatter"
               failed=1
               continue
             fi
-            
+
             # Extract name value
             skill_name=$(echo "$frontmatter" | grep '^name:' | sed 's/^name: *//' | tr -d '"' | tr -d "'")
-            
+
             # Check if name matches folder name
             if [ "$skill_name" != "$folder_name" ]; then
               echo "❌ ERROR: $skill_file has name '$skill_name' but folder is '$folder_name'"
               failed=1
               continue
             fi
-            
+
             echo "✅ $skill_file is valid"
           done < <(find implementers/skills dev/skills shared/skills -name "SKILL.md" -type f -print0 2>/dev/null)
-          
+
           if [ $failed -eq 1 ]; then
             echo ""
             echo "❌ Validation failed. Please fix the errors above."
             exit 1
           fi
-          
+
           echo ""
           echo "✅ All SKILL.md files are valid!"
+
+      - name: Validate plugin marketplace manifests
+        run: |
+          #!/usr/bin/env python3
+          python3 - <<'PY'
+          import json, os, sys, glob
+
+          # This repo is a Claude Code plugin marketplace. Users install an
+          # audience folder as a plugin, so a skill reaches them only when the
+          # manifests point at it. These checks cover the documented ways that
+          # wiring breaks.
+          failed = []
+
+          MARKET = '.claude-plugin/marketplace.json'
+          if not os.path.isfile(MARKET):
+              print(f"❌ ERROR: missing {MARKET}")
+              sys.exit(1)
+
+          try:
+              market = json.load(open(MARKET, encoding='utf-8'))
+          except json.JSONDecodeError as e:
+              print(f"❌ ERROR: {MARKET} is not valid JSON: {e}")
+              sys.exit(1)
+
+          for field in ('name', 'owner', 'plugins'):
+              if field not in market:
+                  failed.append(f"{MARKET} is missing required field '{field}'")
+
+          published = set()
+          for i, entry in enumerate(market.get('plugins', [])):
+              label = f"{MARKET} plugins[{i}]"
+              name, source = entry.get('name'), entry.get('source')
+              if not name:
+                  failed.append(f"{label} is missing 'name'")
+                  continue
+              if not source:
+                  failed.append(f"{label} ({name}) is missing 'source'")
+                  continue
+              if not isinstance(source, str):
+                  print(f"ℹ️  {label} ({name}) uses a non-path source; skipping path checks")
+                  continue
+              if '..' in source.split('/'):
+                  failed.append(f"{label} ({name}) source '{source}' contains '..'")
+                  continue
+              plugin_dir = os.path.normpath(source)
+              if not os.path.isdir(plugin_dir):
+                  failed.append(f"{label} ({name}) source '{source}' is not a directory")
+                  continue
+              published.add(plugin_dir)
+
+              manifest = os.path.join(plugin_dir, '.claude-plugin', 'plugin.json')
+              if not os.path.isfile(manifest):
+                  failed.append(f"{plugin_dir} has no .claude-plugin/plugin.json")
+                  continue
+              try:
+                  plugin = json.load(open(manifest, encoding='utf-8'))
+              except json.JSONDecodeError as e:
+                  failed.append(f"{manifest} is not valid JSON: {e}")
+                  continue
+
+              # An install uses <entry name>@<marketplace>; the skill prefix uses
+              # the manifest name. When they differ, the install id fails.
+              if plugin.get('name') != name:
+                  failed.append(f"{manifest} name '{plugin.get('name')}' "
+                                f"does not match marketplace entry name '{name}'")
+
+              # Claude Code reads plugin.json's version and ignores the entry's,
+              # so two values silently disagree.
+              if 'version' in plugin and 'version' in entry:
+                  failed.append(f"{name} sets 'version' in both plugin.json and its "
+                                f"marketplace entry — keep it in one place")
+
+              skills = glob.glob(os.path.join(plugin_dir, 'skills', '*', 'SKILL.md'))
+              if not skills:
+                  failed.append(f"{plugin_dir} has no skills/*/SKILL.md to publish")
+              else:
+                  print(f"✅ {name} ← {plugin_dir} "
+                        f"({len(skills)} skill{'s' if len(skills) != 1 else ''})")
+
+          # A skill in an unpublished folder reaches nobody through the
+          # marketplace, and nothing else would say so.
+          for audience in ('implementers', 'dev', 'shared'):
+              if not glob.glob(os.path.join(audience, 'skills', '*', 'SKILL.md')):
+                  continue
+              if audience not in published:
+                  failed.append(
+                      f"{audience}/ holds skills but no marketplace entry publishes it. "
+                      f"Add {audience}/.claude-plugin/plugin.json and an entry with "
+                      f"source './{audience}' — see CONTRIBUTING.md")
+
+          if failed:
+              print("")
+              for f in failed:
+                  print(f"❌ ERROR: {f}")
+              sys.exit(1)
+
+          print("")
+          print("✅ Marketplace manifests are valid!")
+          PY
 
       - name: Check for sensitive data patterns
         run: |
           #!/bin/bash
           set -e
-          
+
           echo "Checking for sensitive data patterns..."
-          
+
           failed=0
-          
+
           # Patterns to avoid in public repo
           patterns=(
             "patient.*data"
@@ -100,7 +205,7 @@ jobs:
             "(?i)secret\s*[:=]"
             "[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}"
           )
-          
+
           for pattern in "${patterns[@]}"; do
             if grep -rP "$pattern" implementers/ dev/ shared/ --include="*.md" 2>/dev/null | grep -v "TODO:"; then
               echo "⚠️  WARNING: Found potential sensitive pattern: $pattern"
@@ -108,5 +213,5 @@ jobs:
               # Note: We warn but don't fail on this, as these might be legitimate references
             fi
           done
-          
+
           echo "✅ Sensitive data check complete"
