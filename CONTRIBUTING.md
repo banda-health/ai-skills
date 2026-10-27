@@ -78,6 +78,20 @@ claude plugin validate .
 CI fails if a folder holds skills that no entry publishes. That check exists
 because an unpublished skill reaches nobody, and nothing else would say so.
 
+### Cutting a release for claude.ai users
+
+Claude Code users need no release — they track commits. People who work in
+claude.ai upload a `.zip` by hand, so they need one. After a change merges:
+
+```bash
+scripts/package-skill.sh implementers/skills/demo-page
+```
+
+Attach the file from `dist/` to a GitHub release. `dist/` is git-ignored, so
+never commit the archive. For a skill that stamps its own version, the archive
+name carries it (`demo-page-v3.zip`), which keeps the release name and the
+skill's own output in step.
+
 ### What the plugin name does to a skill's name
 
 A plugin skill runs with the plugin name as a prefix:

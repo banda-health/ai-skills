@@ -35,14 +35,17 @@ To receive them without asking, run `/plugin` in a session, open
 
 ### claude.ai — upload one skill
 
-claude.ai takes a single skill as a `.zip`. Package the skill you want:
+claude.ai takes a single skill as a `.zip`.
 
-```bash
-scripts/package-skill.sh implementers/skills/demo-page
-```
+1. Download the skill's `.zip` from
+   [Releases](https://github.com/banda-health/ai-skills/releases)
+2. In claude.ai, open **Settings → Capabilities → Skills**
+3. Upload the file
 
-Upload the file it writes under `dist/` in **Settings → Capabilities → Skills**.
-Re-upload when a new version lands. This path has no auto-update.
+Re-upload when a new release appears. This path has no auto-update.
+
+If the skill you need has no release yet, ask the maintainers to cut one. They
+build it with `scripts/package-skill.sh`.
 
 ### Cursor and other tools — copy the folder
 
