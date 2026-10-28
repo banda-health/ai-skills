@@ -1,28 +1,27 @@
 # Banda Health AI Skills
 
-AI agent skills for Banda Health workflows. Organized into three folders for different audiences.
+AI agent skills for Banda Health workflows. Every skill lives in `skills/`.
 
 ## What's Inside
 
-- **`implementers/`**: Skills for clinic implementers (non-developers)
-- **`dev/`**: Skills for the development team
-- **`shared/`**: Skills used by both audiences
+- **`skills/demo-page/`**: Build demo pages that match the Banda web UI
+- **`skills/issue-creation-youtrack/`**: Write YouTrack issues in the house format
 
 ## Getting the Skills
 
 ### Claude Code — install from this repo (recommended)
 
-This repo is a Claude Code plugin marketplace. Add it once, then install the
-plugin for your audience:
+This repo is a Claude Code plugin marketplace, and the repo root is the plugin.
+One install gives you every skill:
 
 ```bash
 claude plugin marketplace add banda-health/ai-skills
-claude plugin install banda-implementers@banda-health
+claude plugin install banda-skills@banda-health
 ```
 
 Claude triggers a skill on its own when your request matches it. You can also
 run one by name. Plugin skills carry the plugin name as a prefix, so the
-demo-page skill is `/banda-implementers:demo-page`.
+demo-page skill is `/banda-skills:demo-page`.
 
 **Updates are not automatic.** Run this to get the newest skills:
 
@@ -51,7 +50,7 @@ build it with `scripts/package-skill.sh`.
 
 1. Visit https://github.com/banda-health/ai-skills
 2. Click "Code" → "Download ZIP", then extract it
-3. Copy the skill folders you need into your tool's skills directory:
+3. Copy the folders you need out of `skills/` into your tool's skills directory:
    - **Cursor**: `.cursor/skills/` (project) or `~/.cursor/skills/` (user)
    - **Claude Desktop/Code**: `.claude/skills/` (project) or `~/.claude/skills/` (user)
    - **Other tools**: check your tool's documentation

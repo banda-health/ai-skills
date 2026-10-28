@@ -3,18 +3,20 @@ name: Validate Skills
 on:
   pull_request:
     paths:
-      - '*/skills/**'
+      - 'skills/**'
+      - '**/skills/**'
       - '.claude-plugin/**'
-      - '*/.claude-plugin/**'
+      - '**/.claude-plugin/**'
       - 'scripts/**'
       - '.github/workflows/validate-skills.yml'
   push:
     branches:
       - main
     paths:
-      - '*/skills/**'
+      - 'skills/**'
+      - '**/skills/**'
       - '.claude-plugin/**'
-      - '*/.claude-plugin/**'
+      - '**/.claude-plugin/**'
       - 'scripts/**'
       - '.github/workflows/validate-skills.yml'
 
@@ -76,7 +78,7 @@ jobs:
             fi
 
             echo "✅ $skill_file is valid"
-          done < <(find implementers/skills dev/skills shared/skills -name "SKILL.md" -type f -print0 2>/dev/null)
+          done < <(find . -path ./.git -prune -o -name "SKILL.md" -type f -print0 2>/dev/null)
 
           if [ $failed -eq 1 ]; then
             echo ""
@@ -93,10 +95,10 @@ jobs:
           python3 - <<'PY'
           import json, os, sys, glob
 
-          # This repo is a Claude Code plugin marketplace. Users install an
-          # audience folder as a plugin, so a skill reaches them only when the
-          # manifests point at it. These checks cover the documented ways that
-          # wiring breaks.
+          # This repo is a Claude Code plugin marketplace, and the repo root is
+          # itself the plugin. A skill reaches users only when the manifests
+          # point at it. These checks cover the documented ways that wiring
+          # breaks.
           failed = []
 
           MARKET = '.claude-plugin/marketplace.json'
@@ -165,16 +167,17 @@ jobs:
                   print(f"✅ {name} ← {plugin_dir} "
                         f"({len(skills)} skill{'s' if len(skills) != 1 else ''})")
 
-          # A skill in an unpublished folder reaches nobody through the
-          # marketplace, and nothing else would say so.
-          for audience in ('implementers', 'dev', 'shared'):
-              if not glob.glob(os.path.join(audience, 'skills', '*', 'SKILL.md')):
-                  continue
-              if audience not in published:
+          # A skill outside a published plugin's own skills/ folder reaches
+          # nobody through the marketplace, and nothing else would say so.
+          roots = tuple(os.path.normpath(os.path.join(d, 'skills')) + os.sep
+                        for d in published)
+          for skill in glob.glob(os.path.join('**', 'skills', '*', 'SKILL.md'),
+                                 recursive=True):
+              if not os.path.normpath(skill).startswith(roots):
                   failed.append(
-                      f"{audience}/ holds skills but no marketplace entry publishes it. "
-                      f"Add {audience}/.claude-plugin/plugin.json and an entry with "
-                      f"source './{audience}' — see CONTRIBUTING.md")
+                      f"{skill} sits outside every published plugin. Move it under "
+                      f"skills/, or publish its plugin from "
+                      f".claude-plugin/marketplace.json — see CONTRIBUTING.md")
 
           if failed:
               print("")
@@ -207,7 +210,7 @@ jobs:
           )
 
           for pattern in "${patterns[@]}"; do
-            if grep -rP "$pattern" implementers/ dev/ shared/ --include="*.md" 2>/dev/null | grep -v "TODO:"; then
+            if grep -rP "$pattern" skills/ templates/ --include="*.md" 2>/dev/null | grep -v "TODO:"; then
               echo "⚠️  WARNING: Found potential sensitive pattern: $pattern"
               echo "   Review the matches above to ensure no real sensitive data is committed."
               # Note: We warn but don't fail on this, as these might be legitimate references
