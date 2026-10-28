@@ -1,0 +1,621 @@
+/* base.css — reset, app shell, component styles.
+   Every value below must reference tokens.css vars. Rules mirror the
+   product's computed rendering (Bootstrap 5.3 + src/scss overrides);
+   fix drift here or in tokens.css, never in individual demos. */
+
+*, *::before, *::after { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+  font-family: var(--font-sans);
+  font-size: var(--text-md);
+  line-height: var(--leading);
+  color: var(--color-text);
+  background: var(--color-bg);
+}
+h1, h2, h3, p { margin: 0; }
+h1, h2, h3 { font-weight: var(--weight-medium); }
+a { color: var(--color-primary); text-decoration: none; } /* product strips underlines globally */
+a:hover { color: var(--color-link-hover); }
+/* Product suppresses focus rings ($input-btn-focus-width: 0); inputs
+   signal focus via border color only. */
+:focus-visible { outline: none; box-shadow: var(--focus-ring); }
+
+/* ---- Icons (inline FontAwesome SVGs, fa-fw sizing) ---- */
+.icon { width: 1em; height: 1em; fill: currentColor; vertical-align: -0.125em; }
+.icon-fw { width: 1.25em; }
+
+/* ---- App shell: fixed 250px menu column + workspace column ---- */
+.app-shell { display: flex; min-height: 100vh; }
+.sidebar {
+  width: var(--sidebar-w);
+  flex: 0 0 var(--sidebar-w);
+  background: var(--color-surface);
+  border-bottom: var(--border-w) solid var(--color-menu-border);
+}
+.menu-logo { background: var(--color-brand); }
+.menu-logo img { display: block; width: 8.8em; height: 4.75em; }
+/* Menu items are Bootstrap list-group rows: 0.75rem/1.25rem padding,
+   hairline separators, gray-blue hover/active with black text. */
+.nav-item, .nav-group-label {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  width: 100%;
+  padding: var(--space-3) var(--space-5);
+  background: var(--color-surface);
+  border: 0;
+  border-bottom: var(--border-w) solid var(--color-menu-border);
+  color: var(--color-text);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.nav-item:hover, .nav-item.active, .nav-group-label:hover, .nav-group-label.active {
+  background: var(--color-menu-hover);
+  color: var(--color-on-neutral);
+}
+/* Accordion group header: chevron rotates when open */
+.nav-group-label::after {
+  content: "";
+  width: 1.25rem;
+  height: 1.25rem;
+  margin-left: auto;
+  background: currentColor;
+  -webkit-mask: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3e%3c/svg%3e") center / 1.25rem no-repeat;
+  mask: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3e%3c/svg%3e") center / 1.25rem no-repeat;
+  transition: transform 0.2s ease-in-out;
+}
+.nav-group-label.open::after { transform: rotate(180deg); }
+.nav-item.nested { padding-left: var(--space-7); }
+
+.workspace { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+/* Top strip: right-aligned notifications bell + user dropdown on page bg */
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--space-3);
+  padding: var(--space-1) var(--space-2);
+  min-height: calc(var(--topbar-h) / 2);
+}
+.topbar-spacer { flex: 1; }
+.topbar-bell { position: relative; cursor: pointer; color: var(--color-text); }
+.topbar-bell .icon { width: 25px; height: 25px; }
+.topbar-bell-count {
+  position: absolute;
+  top: -0.25em;
+  right: -0.5em;
+  padding: 2px 4px;
+  border: var(--border-w) solid var(--color-surface);
+  border-radius: var(--radius-sm);
+  background: var(--color-danger);
+  color: var(--color-text-inverse);
+  font-size: var(--text-xs);
+  font-weight: var(--weight-bold);
+  line-height: 1;
+}
+.topbar-user {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  border: 0;
+  background: transparent;
+  color: var(--color-text);
+  font: inherit;
+  cursor: pointer;
+}
+.main { flex: 1; padding: 0 var(--space-4) var(--space-6); min-width: 0; }
+
+@media (max-width: 1199px) { /* product swaps to bottom navigation < xl */
+  .app-shell { flex-direction: column; }
+  .sidebar { display: none; }
+}
+
+/* ---- Page header: full-bleed gray-blue ribbon with bold title ---- */
+.page-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  background: var(--color-ribbon);
+  margin: 0 calc(-1 * var(--space-4)) var(--space-3);
+  padding: var(--space-1) var(--space-4);
+}
+.page-title {
+  font-size: var(--text-2xl);
+  font-weight: var(--weight-bold);
+  color: var(--color-text);
+}
+.page-sub { color: var(--color-text-muted); font-size: var(--text-md); }
+.page-actions { margin-left: auto; display: flex; gap: var(--space-2); }
+
+/* ---- Info ribbon (entity context strip under the page header) ---- */
+.info-ribbon {
+  background: var(--color-ribbon);
+  /* TOKEN-GAP: product uses a literal margin-top: 5px; nearest step is 4px. */
+  margin-top: var(--space-1);
+  padding: 0 var(--space-4);
+}
+.info-ribbon .prop { display: inline-block; margin-right: var(--space-4); }
+
+/* ---- Buttons (Bootstrap .btn metrics; weight 400, radius 6px) ----
+   The product's main CTA is GREEN (.btn-success: New, Save). Neutral
+   gray (.btn-secondary here = product btn-light/bh-light) is Cancel/Back. */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: 0.375rem 0.75rem;
+  border: var(--border-w) solid transparent;
+  border-radius: var(--radius-md);
+  font: inherit;
+  font-weight: var(--weight-regular);
+  line-height: var(--leading);
+  text-align: center;
+  cursor: pointer;
+  transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out;
+}
+.btn:disabled { opacity: 0.65; cursor: not-allowed; }
+.btn-primary { background: var(--color-primary); border-color: var(--color-primary); color: var(--color-on-primary); }
+.btn-primary:hover:not(:disabled) { background: var(--color-primary-hover); border-color: var(--color-primary-hover); }
+.btn-success { background: var(--color-success); border-color: var(--color-success); color: var(--color-text-inverse); }
+.btn-success:hover:not(:disabled) { background: var(--color-success-hover); border-color: var(--color-success-hover); }
+.btn-danger { background: var(--color-danger); border-color: var(--color-danger); color: var(--color-text-inverse); }
+.btn-danger:hover:not(:disabled) { background: var(--color-danger-hover); border-color: var(--color-danger-hover); }
+.btn-secondary { background: var(--color-neutral-btn); border-color: var(--color-neutral-btn); color: var(--color-on-neutral); }
+.btn-secondary:hover:not(:disabled) { background: var(--color-neutral-btn-hover); border-color: var(--color-neutral-btn-hover); }
+.btn-ghost { background: transparent; border-color: transparent; color: var(--color-text); }
+.btn-ghost:hover:not(:disabled) { background: var(--color-neutral-btn); }
+.btn-sm { padding: 0.25rem 0.5rem; font-size: var(--text-sm); border-radius: var(--radius-sm); }
+
+/* ---- Forms ---- */
+.form-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-4); }
+@media (max-width: 720px) { .form-grid { grid-template-columns: 1fr; } }
+.field { display: flex; flex-direction: column; gap: var(--space-1); }
+.label { font-size: var(--text-md); font-weight: var(--weight-bold); color: var(--color-text); }
+.input {
+  display: block;
+  width: 100%;
+  font: inherit;
+  line-height: var(--leading);
+  color: var(--color-text);
+  padding: 0.375rem 0.75rem;
+  border: var(--border-w) solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  transition: border-color 0.15s ease-in-out;
+}
+.input::placeholder { color: var(--color-placeholder); }
+.input:focus-visible { border-color: var(--color-input-focus-border); }
+.input:disabled, .input[readonly] { background: var(--color-neutral-btn); }
+.input.invalid { border-color: var(--color-danger); }
+textarea.input { resize: vertical; min-height: 72px; }
+.help { font-size: var(--text-sm); color: var(--color-placeholder); }
+.error-text { font-size: var(--text-sm); color: var(--color-danger); }
+.checkbox-row { display: flex; align-items: center; gap: var(--space-2); }
+.form-actions { display: flex; gap: var(--space-2); justify-content: flex-end; margin-top: var(--space-4); }
+
+/* Floating-label field — the product's signature input (bold label
+   floated inside the box; 3.5rem tall control). Static demos render
+   the label in its floated position. */
+.field-floating { position: relative; }
+.field-floating > .input {
+  min-height: calc(3.5rem + calc(var(--border-w) * 2));
+  line-height: 1.25;
+  padding: 1.625rem 0.75rem 0.625rem;
+}
+.field-floating > .label {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 2;
+  max-width: 100%;
+  height: 100%;
+  padding: 1rem 0.75rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  pointer-events: none;
+  border: var(--border-w) solid transparent;
+  transform-origin: 0 0;
+  transition: opacity 0.1s ease-in-out, transform 0.1s ease-in-out;
+  transform: scale(0.85) translateY(-0.5rem) translateX(0.15rem);
+  color: var(--color-floating-label);
+  font-weight: var(--weight-bold);
+}
+/* Empty + unfocused: label rests full-size inside the box (product
+   behavior). Give empty inputs placeholder=" " for this to engage. */
+.field-floating > .input:placeholder-shown:not(:focus) + .label { transform: none; }
+.field-floating > .input:placeholder-shown:not(:focus) { padding-top: 1rem; padding-bottom: 1rem; }
+
+/* Input group (search box with trailing icon cell) */
+.input-group { display: flex; width: 100%; }
+.input-group > .input { flex: 1; min-width: 0; border-top-right-radius: 0; border-bottom-right-radius: 0; }
+.input-group-text {
+  display: flex;
+  align-items: center;
+  padding: 0.375rem 0.75rem;
+  background: var(--color-neutral-btn);
+  border: var(--border-w) solid var(--color-border);
+  border-left: 0;
+  border-radius: 0 var(--radius-md) var(--radius-md) 0;
+  color: var(--color-text);
+}
+
+/* ---- Toolbar (workspace row: search + actions above lists) ---- */
+.toolbar { display: flex; gap: var(--space-2); align-items: center; margin: var(--space-2) 0 var(--space-3); flex-wrap: wrap; }
+.search { min-width: 150px; flex: 0 1 300px; }
+
+/* ---- Cards (.bh-card: translucent border, offset gray shadow) ---- */
+.card {
+  background: var(--color-surface);
+  border: var(--border-w) solid var(--color-border-translucent);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  color: var(--color-text);
+}
+.card-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-2) var(--space-4);
+  background: var(--color-card-cap);
+  border-bottom: var(--border-w) solid var(--color-border-translucent);
+}
+/* Card.Header carries `fw-bold h5` in the product — bold, not medium. */
+.card-title { font-size: var(--text-lg); font-weight: var(--weight-bold); }
+.card-body { padding: var(--space-4); }
+.card-footer {
+  padding: var(--space-2) var(--space-4);
+  background: var(--color-card-cap);
+  border-top: var(--border-w) solid var(--color-border-translucent);
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-2);
+}
+/* .bh-card carries its own margin: 1rem on top, right and bottom, 0 left.
+   Demos should not add margin-top by hand — the card already has it. */
+.card { margin: var(--space-4) var(--space-4) var(--space-4) 0; }
+
+/* ---- Form group card (`card border h-100 shadow-none` nested inside a
+   .bh-card body) ----
+   How an MCH form groups its questions: FamilyPlanningDetails.tsx wraps each
+   labelled topic in one of these. Use it for the sections of a single clinical
+   form. Do NOT use .pills for that — those navigate BETWEEN MCH sections.
+   This is not a .bh-card: no offset shadow, no margin, a plain --color-border
+   edge from the `.border` utility, and it stretches to the row's height.
+   The grid is `Row.gy-3.align-items-start` + `Col xs=12 md=6`: 1.5rem column
+   gutter, 1rem row gutter, stacking below Bootstrap's md. `.span-full` is
+   `Col xs={12}`. */
+.group-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  column-gap: var(--space-6);
+  row-gap: var(--space-4);
+  align-items: start;
+}
+.group-grid > .span-full { grid-column: 1 / -1; }
+@media (max-width: 767.98px) { .group-grid { grid-template-columns: 1fr; } }
+.group-card {
+  height: 100%;
+  background: var(--color-surface);
+  border: var(--border-w) solid var(--color-border);
+  border-radius: var(--radius-md);
+  color: var(--color-text);
+}
+.group-card-body { padding: var(--space-4); }
+/* `Form.Label fw-semibold d-block mb-2` — the group's question text. Semibold,
+   not the bold of .label, and it labels a group rather than one input. */
+.group-label { display: block; font-weight: var(--weight-semibold); margin-bottom: var(--space-2); }
+
+/* ---- KPI tiles (dashboard stat cards) ---- */
+.kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: var(--space-4); margin-bottom: var(--space-4); }
+.kpi {
+  background: var(--color-surface);
+  border: var(--border-w) solid var(--color-border-translucent);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  padding: var(--space-4);
+}
+.kpi-label { font-size: var(--text-sm); font-weight: var(--weight-bold); color: var(--color-text-muted); }
+.kpi-value { font-size: var(--text-2xl); font-weight: var(--weight-bold); margin-top: var(--space-1); }
+.kpi-delta { font-size: var(--text-sm); margin-top: var(--space-1); }
+.kpi-delta.up { color: var(--color-success); }
+.kpi-delta.down { color: var(--color-danger); }
+
+/* ---- Tables (.bh-table--list: bold headers in body color, no caps;
+   top border only; clickable rows with subtle hover) ---- */
+.table-wrap { overflow-x: auto; }
+.table { width: 100%; border-collapse: collapse; font-size: var(--text-md); color: var(--color-text); }
+.table thead tr { border-top: var(--border-w) solid var(--color-border-strong); }
+.table th {
+  text-align: left;
+  font-weight: var(--weight-bold);
+  padding: var(--space-3);
+  border-bottom: var(--border-w) solid var(--color-border);
+}
+.table td { padding: var(--space-3); border-bottom: var(--border-w) solid var(--color-border); vertical-align: middle; }
+.table tbody tr { cursor: pointer; }
+.table tbody tr:hover { background: var(--color-row-hover); }
+.table .num { text-align: right; font-variant-numeric: tabular-nums; }
+
+/* ---- Form tables (.bh-table--form) ----
+   The product's data-entry grid, and nothing like .table above: cells have
+   NO padding, controls fill them edge to edge and drop their own border and
+   radius, headers are centered on a full 1px box, and column widths come
+   from the data type rather than the content. Used by the visit page for
+   Diagnosis, Products/services and Payments. */
+.table-form {
+  width: 100%;
+  margin: 0;
+  border: var(--border-w) solid var(--color-border-strong);
+  border-collapse: collapse;
+  font-size: var(--text-md);
+  color: var(--color-text);
+  cursor: initial;
+}
+.table-form th {
+  padding: 0 var(--space-2);
+  border: var(--border-w) solid var(--color-border-strong);
+  font-weight: var(--weight-bold);
+  text-align: center;
+  vertical-align: bottom;
+}
+.table-form td {
+  padding: 0;
+  border-bottom: var(--border-w) solid var(--color-border-strong);
+  vertical-align: middle;
+}
+.table-form tbody tr { cursor: initial; }
+.table-form tbody tr:hover { background: transparent; }
+/* Controls fill the cell and shed their own chrome (.keep-border opts out). */
+.table-form .input:not(.keep-border) { border: 0; border-radius: 0; }
+/* FormatNumberInput defaults to .text-end, so numeric entry is right-aligned. */
+.table-form .num { text-align: right; font-variant-numeric: tabular-nums; }
+/* Footer label cells: right-aligned bold text against the value column. */
+.table-form .cell-label { padding-right: var(--space-2); text-align: right; }
+.table-form .cell-action { text-align: center; }
+/* Column widths keyed to the data type, straight from the product. */
+.table-form .data-type-autocomplete { width: 600px; }
+.table-form .data-type-text { width: 300px; }
+.table-form .data-type-selection { width: 120px; }
+.table-form .data-type-fulfillment { width: 180px; }
+.table-form .data-type-numeric { width: 130px; }
+.table-form .data-type-action { width: 25px; }
+
+/* Icon-only action button inside a form-table cell (product: .btn.p-0.w-100) */
+.btn-icon {
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--color-text);
+  font: inherit;
+  cursor: pointer;
+}
+.btn-icon:hover { color: var(--color-link-hover); }
+
+/* ---- Badges (Bootstrap: solid fill, white text, radius 6px) ---- */
+.badge {
+  display: inline-block;
+  padding: 0.35em 0.65em;
+  border-radius: var(--radius-md);
+  font-size: var(--text-xs);
+  font-weight: var(--weight-bold);
+  line-height: 1;
+  text-align: center;
+  white-space: nowrap;
+  color: var(--color-text-inverse);
+}
+.badge-success { background: var(--color-success); }
+.badge-warning { background: var(--color-warning); color: var(--color-on-neutral); }
+.badge-danger  { background: var(--color-danger); }
+.badge-info    { background: var(--color-info); color: var(--color-on-neutral); }
+.badge-neutral { background: var(--color-secondary-action); }
+
+/* ---- Tabs (.nav-tabs) ----
+   Redesigned in the product since the v1 extraction. It is no longer a strip
+   of cyan tabs with inset edges: it is a gray-blue tray holding transparent
+   tabs, and the active one is a white rounded card with a soft drop shadow.
+   The tray has no bottom margin — the card below carries its own top margin. */
+.tabs {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--tab-gap);
+  padding: var(--tab-tray-pad-y) var(--tab-tray-pad-x);
+  background: var(--tab-tray-bg);
+  border: none;
+  border-radius: 0;
+  margin-bottom: 0;
+}
+.tab {
+  display: flex;
+  align-items: center;
+  margin: 0;
+  padding: var(--tab-pad-y) var(--tab-pad-x);
+  border: none;
+  border-radius: var(--radius-md);
+  background: transparent;
+  box-shadow: none;
+  color: var(--tab-color);
+  font: inherit;
+  line-height: 1.25;
+  cursor: pointer;
+}
+.tab.active {
+  background: var(--color-surface);
+  color: var(--color-text);
+  font-weight: var(--weight-semibold);
+  box-shadow: var(--tab-active-shadow);
+}
+.tab:disabled, .tab.disabled { background: transparent; color: var(--color-menu-hover); }
+
+/* ---- MCH section pills (.visit-mch-nav.nav-pills) ----
+   How the product navigates the sections of an MCH form. Outlined in $primary
+   when inactive, filled slate-blue when active. Prefer this over an accordion
+   for any multi-section clinical form. One pane shows at a time. */
+.pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-bottom: var(--space-4);
+  padding-left: 0;
+  list-style: none;
+}
+.pill {
+  padding: 0.375rem var(--space-4);
+  border: var(--border-w) solid var(--color-primary);
+  border-radius: var(--radius-pill);
+  background: none;
+  color: var(--color-primary);
+  font: inherit;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.pill:hover:not(.active) { color: var(--color-link-hover); }
+.pill.active {
+  background: var(--color-active-fill);
+  border-color: transparent;
+  color: var(--color-text-inverse);
+}
+.pill:disabled { color: var(--color-placeholder); border-color: var(--color-border); cursor: not-allowed; }
+/* In the product inactive panes unmount; a static demo hides them instead. */
+.pane[hidden] { display: none; }
+
+/* ---- Mode toggle (.visit-mode-toggle.btn-group) ----
+   Two separate rounded buttons with a gap, not a joined button group. Built on
+   Bootstrap's .btn-check: a visually hidden radio driving an outline button.
+   VisitModeToggle.tsx carries `mb-3` in its own JSX, the same 1rem MchSectionNav
+   carries, so the margin belongs to the component and not to the caller. */
+.mode-toggle {
+  display: inline-flex;
+  gap: var(--space-2);
+  margin-bottom: var(--space-4);
+}
+.mode-toggle input[type="radio"] {
+  position: absolute;
+  clip: rect(0, 0, 0, 0);
+  pointer-events: none;
+}
+.mode-toggle .btn-outline-primary {
+  background: transparent;
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+.mode-toggle input[type="radio"]:checked + .btn-outline-primary {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: var(--color-on-primary);
+}
+
+/* ---- Badge choice (BadgeChoice.tsx) ----
+   `btn btn-sm rounded-pill bh-badge-choice`, .btn-primary when selected and
+   .btn-outline-secondary when not, inside `d-flex flex-wrap gap-2` with
+   role="radiogroup". This is the product's answer control inside a form group
+   card: Yes/No questions and short reference lists. Clicking the selected
+   badge clears it, so "unanswered" stays reachable. .bh-badge-choice raises
+   the btn-sm inline padding to 0.9rem and the weight to 600. */
+.badge-choice-set { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+.badge-choice {
+  padding: 0.25rem 0.9rem;
+  border: var(--border-w) solid var(--color-secondary-action);
+  border-radius: var(--radius-pill);
+  background: transparent;
+  color: var(--color-secondary-action);
+  font: inherit;
+  font-size: var(--text-sm);
+  font-weight: var(--weight-semibold);
+  line-height: var(--leading);
+  cursor: pointer;
+  transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out;
+}
+.badge-choice:hover:not(:disabled):not(.selected) {
+  background: var(--color-menu-border);
+  border-color: var(--color-choice-hover-border);
+  color: var(--color-text);
+}
+.badge-choice.selected {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: var(--color-on-primary);
+}
+.badge-choice.selected:hover:not(:disabled) {
+  background: var(--color-primary-light);
+  border-color: var(--color-primary-light);
+}
+.badge-choice:disabled { opacity: 0.65; cursor: not-allowed; }
+
+/* ---- Alerts (Bootstrap 5.3: subtle bg, emphasis text, soft border) ---- */
+.alert {
+  padding: var(--space-4);
+  border: var(--border-w) solid transparent;
+  border-radius: var(--radius-md);
+  margin-bottom: var(--space-4);
+}
+.alert-info    { background: var(--color-info-soft);    color: var(--color-info-emphasis);    border-color: var(--color-info-border-soft); }
+.alert-success { background: var(--color-success-soft); color: var(--color-success-emphasis); border-color: var(--color-success-border-soft); }
+.alert-warning { background: var(--color-warning-soft); color: var(--color-warning-emphasis); border-color: var(--color-warning-border-soft); }
+.alert-danger  { background: var(--color-danger-soft);  color: var(--color-danger-emphasis);  border-color: var(--color-danger-border-soft); }
+
+/* ---- Modal (static demo markup; Bootstrap metrics) ---- */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-modal); /* above page floating labels (z-index 2) */
+  background: var(--color-backdrop);
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: var(--space-7) var(--space-5);
+}
+.modal-backdrop[hidden] { display: none; } /* let JS-toggled demos hide it despite display:flex */
+.modal {
+  background: var(--color-surface);
+  border: var(--border-w) solid var(--color-border-translucent);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  width: 100%;
+  max-width: 500px;
+}
+.modal-title {
+  font-size: var(--text-xl);
+  font-weight: var(--weight-medium);
+  padding: var(--space-4);
+  border-bottom: var(--border-w) solid var(--color-border);
+}
+.modal-body { padding: var(--space-4); }
+.modal-footer {
+  padding: var(--space-3) var(--space-4);
+  border-top: var(--border-w) solid var(--color-border);
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-2);
+}
+
+/* ---- Empty state ---- */
+.empty { text-align: center; padding: var(--space-8) var(--space-5); color: var(--color-text-muted); }
+.empty-title { font-size: var(--text-lg); font-weight: var(--weight-medium); color: var(--color-text); }
+.empty-hint { margin-top: var(--space-1); font-size: var(--text-md); }
+.empty .btn { margin-top: var(--space-4); }
+
+/* ---- Description list (detail views) ---- */
+.dl { display: grid; grid-template-columns: 160px 1fr; row-gap: var(--space-2); column-gap: var(--space-4); margin: 0; }
+.dl dt { color: var(--color-text-muted); font-weight: var(--weight-bold); }
+.dl dd { margin: 0; }
+
+/* ---- Pagination (bh-btn-page: borderless white buttons, gray-blue
+   active page, gray hover) ---- */
+.pagination { display: flex; gap: var(--space-1); align-items: center; justify-content: flex-end; padding: var(--space-3) 0; color: var(--color-text); }
+.page-btn {
+  padding: 0.375rem 0.75rem;
+  border: var(--border-w) solid var(--color-surface);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  color: var(--color-on-neutral);
+  font: inherit;
+  cursor: pointer;
+}
+.page-btn:hover:not(:disabled):not(.active) { background: var(--color-neutral-btn); border-color: var(--color-neutral-btn); }
+.page-btn.active { background: var(--color-page-active); border-color: var(--color-page-active); }
+.page-btn:disabled { opacity: 0.65; cursor: not-allowed; }
