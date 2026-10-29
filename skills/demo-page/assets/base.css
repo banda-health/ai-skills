@@ -308,6 +308,100 @@ textarea.input { resize: vertical; min-height: 72px; }
    not the bold of .label, and it labels a group rather than one input. */
 .group-label { display: block; font-weight: var(--weight-semibold); margin-bottom: var(--space-2); }
 
+/* ---- Expandable panel (.bh-expandable-panel) ----
+   src/scss/module/_expandable_panel.scss. A Bootstrap Card whose header toggles
+   a Collapse body. The product uses it at two levels:
+     - as a GROUPING — ImmunizationAgeBandSection.tsx: header is a label plus
+       badges, a chevron button on the right, closed by default, no checkbox.
+       Use this shape for the sections of a long clinical form.
+     - as an ANSWER — ImmunizationToggleSection.tsx, FamilyPlanningScreenings-
+       Section.tsx: a checkbox in the header both answers the question and opens
+       the body. Only use it when ticking the header IS the clinical answer.
+   Three visual states: closed (white header), --open (tinted header, plain
+   body), --active (tinted header AND body, primary border, soft shadow).
+   This does NOT replace .pills. Pills navigate BETWEEN MCH sections; panels
+   group questions WITHIN one. A form may carry both.
+   The chevron is a real FontAwesome icon in the product — inline the SVG. */
+.panel {
+  border: var(--border-w) solid var(--color-border-strong);
+  background: var(--color-bg);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+}
+.panel + .panel { margin-top: var(--space-3); }
+.panel-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  user-select: none;
+  background: var(--color-surface);
+  border: 0;
+  border-bottom: var(--border-w) solid transparent;
+  border-radius: inherit;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+/* The header is two buttons in the product: the label fills the row, the
+   chevron sits at the end. Both toggle. */
+.panel-header > .panel-toggle {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-3);
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.panel-header > .panel-chevron {
+  flex-shrink: 0;
+  padding: var(--space-3);
+  border: 0;
+  background: none;
+  color: inherit;
+  cursor: pointer;
+}
+/* The product swaps the icon (`chevron-up` / `chevron-down`); the FA path is
+   symmetric, so one icon plus a rotation renders identically and saves the
+   demo a second SVG. */
+.panel-chevron .icon { width: 0.75em; height: 0.75em; transition: transform 0.15s ease; }
+.panel--open > .panel-header .panel-chevron .icon,
+.panel--active > .panel-header .panel-chevron .icon { transform: rotate(180deg); }
+.panel-label { font-weight: var(--weight-bold); }
+.panel-sub { display: block; font-size: var(--text-sm); color: var(--color-text-muted); }
+.panel-header:focus-visible, .panel-toggle:focus-visible, .panel-chevron:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: -2px;
+}
+.panel-body { padding: var(--space-4); background: transparent; }
+.panel--open > .panel-header {
+  background: var(--panel-tint);
+  border-bottom-color: var(--panel-active-line);
+}
+.panel--active {
+  border-color: var(--color-primary);
+  background: var(--panel-active-bg);
+  box-shadow: var(--panel-active-shadow);
+}
+.panel--active > .panel-header {
+  background: var(--panel-tint);
+  border-bottom: var(--border-w) solid var(--panel-active-line);
+}
+.panel--active > .panel-body { border-top: var(--border-w) solid var(--panel-active-line); }
+/* The product unmounts or animates the body via react-bootstrap Collapse; a
+   demo just hides it. */
+.panel-body[hidden] { display: none; }
+
 /* ---- KPI tiles (dashboard stat cards) ---- */
 .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: var(--space-4); margin-bottom: var(--space-4); }
 .kpi {
@@ -412,6 +506,10 @@ textarea.input { resize: vertical; min-height: 72px; }
 .badge-danger  { background: var(--color-danger); }
 .badge-info    { background: var(--color-info); color: var(--color-on-neutral); }
 .badge-neutral { background: var(--color-secondary-action); }
+/* `bg="info-subtle" className="text-info-emphasis"` — the tally badge on an
+   expandable panel header (ImmunizationAgeBandSection.tsx). Quiet, so it reads
+   as a count beside the label rather than a status. */
+.badge-info-soft { background: var(--color-info-soft); color: var(--color-info-emphasis); }
 
 /* ---- Tabs (.nav-tabs) ----
    Redesigned in the product since the v1 extraction. It is no longer a strip
@@ -453,8 +551,9 @@ textarea.input { resize: vertical; min-height: 72px; }
 
 /* ---- MCH section pills (.visit-mch-nav.nav-pills) ----
    How the product navigates the sections of an MCH form. Outlined in $primary
-   when inactive, filled slate-blue when active. Prefer this over an accordion
-   for any multi-section clinical form. One pane shows at a time. */
+   when inactive, filled slate-blue when active. One pane shows at a time.
+   Pills navigate BETWEEN MCH sections only — one pill row per visit form.
+   To break up the sections WITHIN one form, use .panel instead. */
 .pills {
   display: flex;
   flex-wrap: wrap;
