@@ -58,22 +58,23 @@ body { padding: var(--space-6); }
        list-table (.table) + pagination, form-card (floating labels),
        form-table (.bh-table--form) + badges + icon-only actions,
        tabs, mch-section-pills, mode-toggle,
-       form-group-card, badge-choice, mch-product-table,
+       form-group-card, expandable-panel, badge-choice, mch-product-table,
        alerts, description-list, empty-state, modal,
        sidebar nav + topbar (in template.html)
 
-     TWO LEVELS, DO NOT MIX THEM (GO-3653):
+     THREE LEVELS, DO NOT MIX THEM (GO-3653):
        .pills navigate BETWEEN MCH sections — ANC | Maternity | Post natal |
        Family planning | CWC | Immunization | Nutrition. One pill row per
        visit form, never one per form.
-       Inside a section's own form, group the questions with form-group-card.
+       expandable-panel groups the sections WITHIN one long form. Closed by
+       default, chevron on the right, group cards inside the body.
+       form-group-card holds one labelled question or topic. It is the leaf.
        A second pill row for a single form's own sections is wrong: the CWC
        demo shipped that way once and read as if CWC were the whole module.
+       Panels are the right answer there instead — a form with more than about
+       ten group cards needs them, or it reads as one unbroken wall.
 
      NOT EXTRACTED (check the product first):
-       accordion / .bh-expandable-panel  — src/scss/module/_expandable_panel.scss
-         Used for immunization vaccine rows, not for form sections. For
-         multi-section clinical forms use mch-section-pills instead.
        fulfillment status dropdown       — src/components/Visit/FulfillmentStatusSelect.tsx
        autocomplete / typeahead field    — used in every .data-type-autocomplete cell
        date picker                       — src/scss/module/date_picker.scss
@@ -400,6 +401,70 @@ body { padding: var(--space-6); }
     </div>
   </div>
   <!-- /component: form-group-card -->
+</section>
+
+<section>
+  <div class="g-label">expandable-panel (.bh-expandable-panel —
+  <code>_expandable_panel.scss</code>. A card header that toggles a collapse body.
+  Two uses, do not mix them: as a <strong>grouping</strong>
+  (ImmunizationAgeBandSection.tsx — label, optional badges, chevron, closed by
+  default) for the sections of a long clinical form; as an <strong>answer</strong>
+  (ImmunizationToggleSection.tsx, FamilyPlanningScreeningsSection.tsx — a checkbox
+  in the header both answers and opens). Group cards live inside the body.
+  Panels do not replace .pills: pills navigate BETWEEN MCH sections, panels group
+  questions WITHIN one.)</div>
+  <!-- component: expandable-panel -->
+  <!-- grouping shape, open -->
+  <div class="panel panel--open">
+    <h3 class="panel-header">
+      <button class="panel-toggle" type="button" aria-expanded="true" aria-controls="panel-demo-1-body">
+        <span class="panel-label">CWC visit</span>
+      </button>
+      <button class="panel-chevron" type="button" aria-expanded="true" aria-controls="panel-demo-1-body" aria-label="CWC visit">
+        <svg class="icon" viewBox="0 0 512 512" aria-hidden="true"><path d="M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"/></svg>
+      </button>
+    </h3>
+    <div class="panel-body" id="panel-demo-1-body">
+      <div class="group-grid">
+        <div class="group-card span-full">
+          <div class="group-card-body">
+            <span class="group-label">Clinical details</span>
+            <textarea class="input" aria-label="Clinical details"></textarea>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- grouping shape, closed, with a count badge as the age bands carry -->
+  <div class="panel">
+    <h3 class="panel-header">
+      <button class="panel-toggle" type="button" aria-expanded="false" aria-controls="panel-demo-2-body">
+        <span class="panel-label">Supplementation and deworming</span>
+        <span class="badge badge-info-soft">2/4 answered</span>
+      </button>
+      <button class="panel-chevron" type="button" aria-expanded="false" aria-controls="panel-demo-2-body" aria-label="Supplementation and deworming">
+        <svg class="icon" viewBox="0 0 512 512" aria-hidden="true"><path d="M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"/></svg>
+      </button>
+    </h3>
+    <div class="panel-body" id="panel-demo-2-body" hidden></div>
+  </div>
+  <!-- answer shape: the header checkbox IS the clinical answer -->
+  <div class="panel panel--active">
+    <div class="panel-header">
+      <label class="panel-toggle">
+        <input type="checkbox" checked aria-label="Cervical cancer screening">
+        <span class="panel-label">Cervical cancer screening</span>
+      </label>
+    </div>
+    <div class="panel-body">
+      <span class="group-label">Pap method used</span>
+      <div class="badge-choice-set" role="radiogroup" aria-label="Pap method used">
+        <button class="badge-choice selected" type="button" role="radio" aria-checked="true">VIA</button>
+        <button class="badge-choice" type="button" role="radio" aria-checked="false">Pap smear</button>
+      </div>
+    </div>
+  </div>
+  <!-- /component: expandable-panel -->
 </section>
 
 <section>

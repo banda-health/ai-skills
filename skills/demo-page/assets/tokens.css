@@ -6,9 +6,14 @@
    src/scss/base/_variables.scss (Bootstrap 5.3 theme) compiled with the
    repo's own sass; component values read from the compiled CSS output.
 
-   Assets version: v4
+   Assets version: v5
    Extracted from: greenlight-client@7c3b7812
    Extraction date: 2026-10-23
+
+   v5 (2026-10-29) adds .bh-expandable-panel, lifted from
+   _expandable_panel.scss at d0a2b353. That file did not exist at 7c3b7812.
+   Only it and _card.scss changed under src/scss between the two commits,
+   and _card.scss gained SHA-only rules, so every other value still holds.
 
    The version + date are what implementers without the repo judge staleness
    by; they appear in every generated page's footer. Bump the version on any
@@ -131,6 +136,16 @@
   --tab-pad-x: 1rem;
   --tab-color: #607689;            /* $secondary */
   --tab-active-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+
+  /* Expandable panel (.bh-expandable-panel — _expandable_panel.scss).
+     The SCSS mixes these from $primary (#5f92c8) at build time; the hex is
+     what ships. --panel-tint is the header of an open or active panel,
+     --panel-active-bg the body behind it, --panel-active-line the hairline
+     between them. */
+  --panel-tint: #dce7f3;            /* mix(white, $primary, 78%) */
+  --panel-active-bg: #ecf2f8;       /* mix(white, $primary, 88%) */
+  --panel-active-line: #c7d9ec;     /* mix(white, $primary, 65%) */
+  --panel-active-shadow: 0 2px 8px rgba(71, 95, 123, 0.1); /* rgba($primary-color, .1) */
 
   /* Layering ($zindex-modal — backdrop shares it in the product) */
   --z-modal: 1055;
